@@ -1,0 +1,1220 @@
+{
+  "apiVersion": "1.0",
+  "baseUrl": "/api",
+  "authentication": {
+    "type": "JWT Bearer Token",
+    "tokenHeader": "Authorization",
+    "tokenFormat": "Bearer {token}",
+    "refreshTokenSupported": true,
+    "endpoints": {
+      "login": "POST /auth",
+      "refresh": "POST /auth/refresh",
+      "register": "POST /auth/register"
+    }
+  },
+  "roles": {
+    "Admin": "Admin",
+    "Member": "Member"
+  },
+  "permissions": [
+    "polls:read",
+    "polls:add",
+    "polls:update",
+    "polls:delete",
+    "questions:read",
+    "questions:add",
+    "questions:update",
+    "users:read",
+    "users:add",
+    "users:update",
+    "roles:read",
+    "roles:add",
+    "roles:update",
+    "results:read"
+  ],
+  "rateLimiting": {
+    "enabled": true,
+    "policies": {
+      "userLimiter": "Applied to login endpoint",
+      "concurrency": "Applied to polls endpoints",
+      "ipLimiter": "Can be enabled globally on auth controller"
+    }
+  },
+  "endpoints": {
+    "authentication": [
+      {
+        "method": "POST",
+        "path": "/auth",
+        "description": "User login",
+        "authentication": false,
+        "authorization": null,
+        "rateLimiting": "userLimiter",
+        "request": {
+          "body": {
+            "email": "string (required)",
+            "password": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "token": "string (JWT access token)",
+              "expiresIn": "number (seconds)",
+              "refreshToken": "string",
+              "refreshTokenExpiration": "datetime"
+            }
+          },
+          "error": {
+            "statusCode": "400/401",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/refresh",
+        "description": "Refresh access token",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "token": "string (expired JWT token)",
+            "refreshToken": "string"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "token": "string (new JWT access token)",
+              "expiresIn": "number",
+              "refreshToken": "string (new refresh token)",
+              "refreshTokenExpiration": "datetime"
+            }
+          },
+          "error": {
+            "statusCode": "400/401",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/auth/revoke-refresh-token",
+        "description": "Revoke a refresh token (logout)",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "token": "string (JWT token)",
+            "refreshToken": "string"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/register",
+        "description": "Register a new user",
+        "authentication": false,
+        "authorization": null,
+        "rateLimiting": "disabled",
+        "request": {
+          "body": {
+            "email": "string (required)",
+            "password": "string (required)",
+            "firstName": "string (required)",
+            "lastName": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null,
+            "note": "Confirmation email sent"
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/confirm-email",
+        "description": "Confirm user email with verification code",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "userId": "string (required)",
+            "code": "string (verification code, required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/resend-confirm-email",
+        "description": "Resend email confirmation code",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "email": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/forgot-password",
+        "description": "Request password reset code",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "email": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null,
+            "note": "Reset code sent to email"
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/auth/reset-password",
+        "description": "Reset password with verification code",
+        "authentication": false,
+        "authorization": null,
+        "request": {
+          "body": {
+            "email": "string (required)",
+            "code": "string (reset code, required)",
+            "newPassword": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "account": [
+      {
+        "method": "GET",
+        "path": "/account",
+        "description": "Get current user profile",
+        "authentication": true,
+        "authorization": "Authenticated users",
+        "request": null,
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "email": "string",
+              "userName": "string",
+              "firstName": "string",
+              "lastName": "string"
+            }
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/account/info",
+        "description": "Update current user profile",
+        "authentication": true,
+        "authorization": "Authenticated users",
+        "request": {
+          "body": {
+            "firstName": "string (required)",
+            "lastName": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/account/change-password",
+        "description": "Change current user password",
+        "authentication": true,
+        "authorization": "Authenticated users",
+        "request": {
+          "body": {
+            "currentPassword": "string (required)",
+            "newPassword": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "polls": [
+      {
+        "method": "GET",
+        "path": "/api/polls",
+        "description": "Get all polls",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:read"]
+        },
+        "rateLimiting": "concurrency",
+        "request": null,
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "id": "number",
+                "title": "string",
+                "summary": "string",
+                "isPublished": "boolean",
+                "startsAt": "date (DateOnly, YYYY-MM-DD)",
+                "endsAt": "date (DateOnly, YYYY-MM-DD)"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/polls/current",
+        "description": "Get currently active/published polls",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"]
+        },
+        "rateLimiting": "concurrency",
+        "request": null,
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "id": "number",
+                "title": "string",
+                "summary": "string",
+                "isPublished": "boolean",
+                "startsAt": "date",
+                "endsAt": "date"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/polls/{id}",
+        "description": "Get specific poll by ID",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:read"]
+        },
+        "rateLimiting": "concurrency",
+        "request": {
+          "params": {
+            "id": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "number",
+              "title": "string",
+              "summary": "string",
+              "isPublished": "boolean",
+              "startsAt": "date",
+              "endsAt": "date"
+            }
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/polls",
+        "description": "Create a new poll",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:add"]
+        },
+        "rateLimiting": "concurrency",
+        "corsDisabled": true,
+        "request": {
+          "body": {
+            "title": "string (required)",
+            "summary": "string (required)",
+            "startsAt": "date (DateOnly, YYYY-MM-DD, required)",
+            "endsAt": "date (DateOnly, YYYY-MM-DD, required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 201,
+            "headers": {
+              "Location": "/api/polls/{id}"
+            },
+            "body": {
+              "id": "number",
+              "title": "string",
+              "summary": "string",
+              "isPublished": "boolean",
+              "startsAt": "date",
+              "endsAt": "date"
+            }
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/polls/{id}",
+        "description": "Update an existing poll",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:update"]
+        },
+        "rateLimiting": "concurrency",
+        "request": {
+          "params": {
+            "id": "number (required)"
+          },
+          "body": {
+            "title": "string (required)",
+            "summary": "string (required)",
+            "startsAt": "date (DateOnly, required)",
+            "endsAt": "date (DateOnly, required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400/404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/polls/{id}",
+        "description": "Delete a poll",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:delete"]
+        },
+        "rateLimiting": "concurrency",
+        "corsDisabled": true,
+        "request": {
+          "params": {
+            "id": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/polls/{id}/togglePublish",
+        "description": "Toggle poll publish status",
+        "authentication": true,
+        "authorization": {
+          "roles": ["Member"],
+          "permissions": ["polls:update"]
+        },
+        "rateLimiting": "concurrency",
+        "corsEnabled": "AllowAll",
+        "request": {
+          "params": {
+            "id": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "questions": [
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/questions",
+        "description": "Get all questions for a poll (with pagination and filtering)",
+        "authentication": true,
+        "authorization": null,
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          },
+          "query": {
+            "pageNumber": "number (default: 1)",
+            "pageSize": "number (default: 10)",
+            "searchValue": "string (optional)",
+            "sortCoulms": "string (optional, column name)",
+            "sortDirection": "string (default: 'ASC', values: 'ASC'/'DESC')"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "note": "Paginated response with questions",
+              "items": [
+                {
+                  "id": "number",
+                  "content": "string",
+                  "answers": [
+                    {
+                      "id": "number",
+                      "content": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/questions/{id}",
+        "description": "Get specific question by ID",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["questions:read"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)",
+            "id": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "number",
+              "content": "string",
+              "answers": [
+                {
+                  "id": "number",
+                  "content": "string"
+                }
+              ]
+            }
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/polls/{pollId}/questions",
+        "description": "Add a new question to a poll",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["questions:add"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          },
+          "body": {
+            "content": "string (required, question text)",
+            "answers": [
+              "string (answer content, required, list of answers)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 201,
+            "headers": {
+              "Location": "/api/polls/{pollId}/questions/{id}"
+            },
+            "body": {
+              "id": "number",
+              "content": "string",
+              "answers": [
+                {
+                  "id": "number",
+                  "content": "string"
+                }
+              ]
+            }
+          },
+          "error": {
+            "statusCode": "400/404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/polls/{pollId}/questions/{id}",
+        "description": "Update an existing question",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["questions:update"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)",
+            "id": "number (required)"
+          },
+          "body": {
+            "content": "string (required)",
+            "answers": [
+              "string (required, list of answer contents)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400/404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/polls/{pollId}/questions/{id}/toggleStatus",
+        "description": "Toggle question active status",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["questions:update"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)",
+            "id": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "votes": [
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/vote",
+        "description": "Get available questions for voting (questions user hasn't voted on)",
+        "authentication": true,
+        "authorization": "Authenticated users",
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "id": "number",
+                "content": "string",
+                "answers": [
+                  {
+                    "id": "number",
+                    "content": "string"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/polls/{pollId}/vote",
+        "description": "Submit vote answers for a poll",
+        "authentication": true,
+        "authorization": "Authenticated users",
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          },
+          "body": {
+            "answers": [
+              {
+                "questionId": "number (required)",
+                "answerId": "number (required)"
+              }
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 201,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "results": [
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/results/row-data",
+        "description": "Get raw voting data for a poll",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["results:read"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "title": "string (poll title)",
+              "votes": [
+                {
+                  "voterName": "string",
+                  "voteDate": "datetime",
+                  "selectedAnswers": [
+                    {
+                      "question": "string",
+                      "answer": "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/results/votes-per-day",
+        "description": "Get vote count aggregated by day",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["results:read"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "date": "date (DateOnly, YYYY-MM-DD)",
+                "numberOfVotes": "number"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/polls/{pollId}/results/votes-per-question",
+        "description": "Get vote distribution per question and answer",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["results:read"]
+        },
+        "request": {
+          "params": {
+            "pollId": "number (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "question": "string",
+                "answers": [
+                  {
+                    "answer": "string",
+                    "numberOfVotes": "number"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "roles": [
+      {
+        "method": "GET",
+        "path": "/api/roles",
+        "description": "Get all roles",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["roles:read"]
+        },
+        "request": {
+          "query": {
+            "includeDisabled": "boolean (optional, include disabled roles)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "id": "string",
+                "name": "string",
+                "isDeleted": "boolean"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/roles/{id}",
+        "description": "Get specific role with permissions",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["roles:read"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required, role ID)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "string",
+              "name": "string",
+              "isDeleted": "boolean",
+              "permissions": [
+                "string (permission codes)"
+              ]
+            }
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/roles",
+        "description": "Create a new role",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["roles:add"]
+        },
+        "request": {
+          "body": {
+            "name": "string (required)",
+            "permissions": [
+              "string (permission codes, required)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 201,
+            "headers": {
+              "Location": "/api/roles/{id}"
+            },
+            "body": {
+              "id": "string",
+              "name": "string",
+              "isDeleted": "boolean"
+            }
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/roles/{id}",
+        "description": "Update an existing role",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["roles:update"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required)"
+          },
+          "body": {
+            "name": "string (required)",
+            "permissions": [
+              "string (permission codes, required)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400/404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/roles/{id}/toggle-status",
+        "description": "Toggle role enabled/disabled status",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["roles:update"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ],
+    "users": [
+      {
+        "method": "GET",
+        "path": "/api/users",
+        "description": "Get all users",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:read"]
+        },
+        "request": null,
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": [
+              {
+                "id": "string",
+                "firstName": "string",
+                "lastName": "string",
+                "email": "string",
+                "isDisabled": "boolean",
+                "roles": [
+                  "string (role names)"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/api/users/{id}",
+        "description": "Get specific user by ID",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:read"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required, user ID)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "isDisabled": "boolean",
+              "roles": [
+                "string"
+              ]
+            }
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/api/users",
+        "description": "Create a new user",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:add"]
+        },
+        "request": {
+          "body": {
+            "firstName": "string (required)",
+            "lastName": "string (required)",
+            "email": "string (required)",
+            "password": "string (required)",
+            "roles": [
+              "string (role IDs, required)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 200,
+            "body": {
+              "id": "string",
+              "firstName": "string",
+              "lastName": "string",
+              "email": "string",
+              "isDisabled": "boolean",
+              "roles": [
+                "string"
+              ]
+            }
+          },
+          "error": {
+            "statusCode": "400",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/users/{id}",
+        "description": "Update an existing user",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:update"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required)"
+          },
+          "body": {
+            "firstName": "string (required)",
+            "lastName": "string (required)",
+            "email": "string (required)",
+            "roles": [
+              "string (role IDs, required)"
+            ]
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "400/404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/users/{id}/toggle-status",
+        "description": "Toggle user enabled/disabled status",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:update"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/api/users/{id}/unlock",
+        "description": "Unlock a locked user account",
+        "authentication": true,
+        "authorization": {
+          "permissions": ["users:update"]
+        },
+        "request": {
+          "params": {
+            "id": "string (required)"
+          }
+        },
+        "response": {
+          "success": {
+            "statusCode": 204,
+            "body": null
+          },
+          "error": {
+            "statusCode": "404",
+            "body": "ProblemDetails"
+          }
+        }
+      }
+    ]
+  },
+  "validationRules": {
+    "note": "All request bodies are validated using FluentValidation. Validation errors return 400 with ProblemDetails containing field-specific error messages."
+  },
+  "errorResponses": {
+    "ProblemDetails": {
+      "type": "string (error type URI)",
+      "title": "string (error title)",
+      "status": "number (HTTP status code)",
+      "detail": "string (error details)",
+      "errors": {
+        "fieldName": [
+          "string (validation error messages)"
+        ]
+      }
+    }
+  },
+  "dataTypes": {
+    "DateOnly": "string format YYYY-MM-DD (e.g., '2026-08-15')",
+    "DateTime": "string ISO 8601 format (e.g., '2026-08-15T23:43:30.887Z')"
+  },
+  "corsConfiguration": {
+    "allowedOrigins": [
+      "https://www.google.com",
+      "https://www.facebook.com"
+    ],
+    "note": "Some endpoints have CORS disabled or have specific CORS policies. Check individual endpoint configurations."
+  },
+  "defaultCredentials": {
+    "adminEmail": "admin@survey-basket.com",
+    "adminPassword": "Zm@123456",
+    "note": "Default admin credentials for initial setup. Change in production."
+  }
+}
