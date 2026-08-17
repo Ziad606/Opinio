@@ -2,6 +2,7 @@ import axios from "axios";
 import { env } from "../config/env";
 import { useAuthStore } from "../features/auth/stores/auth.store";
 import type { AuthResponse } from "../features/auth/types/auth-response";
+import { ApiError } from "../types/api-error";
 
 declare module "axios" {
     export interface AxiosRequestConfig {
@@ -34,6 +35,26 @@ apiClient.interceptors.request.use((config) => {
 
     return config;
 });
+
+apiClient.interceptors.response.use(
+    (response) => response,
+
+    (error) => {
+        if (axios.isAxiosError(error) && error.response) {
+            const data = error.response.data;
+
+            if (data?.errors && Array.isArray(data.errors)) {
+                // هنا بنحوّله إلى ApiError
+                throw new ApiError(
+                    data.status ?? error.response.status,
+                    data.errors,
+                    data.title ?? "Request failed",
+                );
+            }
+        }
+        throw error;
+    },
+);
 
 apiClient.interceptors.response.use(
     (response) => response,
