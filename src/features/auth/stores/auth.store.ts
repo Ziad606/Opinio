@@ -12,6 +12,8 @@ interface AuthState {
     accessTokenExpiresIn: number | null;
     refreshTokenExpiration: string | null;
 
+    isAuthenticated: boolean;
+
     setAuth: (auth: AuthResponse) => void;
     clearAuth: () => void;
 }
@@ -26,6 +28,7 @@ export const useAuthStore = create<AuthState>()(
 
             accessTokenExpiresIn: null,
             refreshTokenExpiration: null,
+            isAuthenticated: false,
 
             setAuth: (auth) =>
                 set({
@@ -41,6 +44,7 @@ export const useAuthStore = create<AuthState>()(
 
                     accessTokenExpiresIn: auth.expiresIn,
                     refreshTokenExpiration: auth.refreshTokenExpiration,
+                    isAuthenticated: true,
                 }),
 
             clearAuth: () =>
@@ -52,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
 
                     accessTokenExpiresIn: null,
                     refreshTokenExpiration: null,
+                    isAuthenticated: true,
                 }),
         }),
         {

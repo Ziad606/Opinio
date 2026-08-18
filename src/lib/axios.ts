@@ -39,26 +39,6 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
     (response) => response,
 
-    (error) => {
-        if (axios.isAxiosError(error) && error.response) {
-            const data = error.response.data;
-
-            if (data?.errors && Array.isArray(data.errors)) {
-                // هنا بنحوّله إلى ApiError
-                throw new ApiError(
-                    data.status ?? error.response.status,
-                    data.errors,
-                    data.title ?? "Request failed",
-                );
-            }
-        }
-        throw error;
-    },
-);
-
-apiClient.interceptors.response.use(
-    (response) => response,
-
     async (error) => {
         if (!axios.isAxiosError(error)) {
             throw error;
@@ -94,19 +74,45 @@ apiClient.interceptors.response.use(
     },
 );
 
+apiClient.interceptors.response.use(
+    (response) => response,
+
+    (error) => {
+        if (axios.isAxiosError(error) && error.response) {
+            const data = error.response.data;
+
+            if (data?.errors && Array.isArray(data.errors)) {
+                // هنا بنحوّله إلى ApiError
+                throw new ApiError(
+                    data.status ?? error.response.status,
+                    data.errors,
+                    data.title ?? "Request failed",
+                );
+            }
+        }
+        throw error;
+    },
+);
+
 async function refreshAccessToken(): Promise<string> {
-    const { accessToken, refreshToken } = useAuthStore.getState();
+    try {
+        const { accessToken, refreshToken } = useAuthStore.getState();
 
-    if (!accessToken || !refreshToken) {
-        throw new Error("No refresh token available");
+        if (!accessToken || !refreshToken) {
+            throw new Error("No refresh token available");
+        }
+
+        const response = await authClient.post<AuthResponse>("/auth/refresh", {
+            token: accessToken,
+            refreshToken,
+        });
+
+        useAuthStore.getState().setAuth(response.data);
+
+        return response.data.token;
+    } catch (error) {
+        useAuthStore.getState().clearAuth();
+
+        throw error;
     }
-
-    const response = await authClient.post<AuthResponse>("/auth/refresh", {
-        token: accessToken,
-        refreshToken,
-    });
-
-    useAuthStore.getState().setAuth(response.data);
-
-    return response.data.token;
 }

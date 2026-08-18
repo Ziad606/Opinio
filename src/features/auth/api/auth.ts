@@ -20,4 +20,14 @@ export const authService = {
 
         return response.data;
     },
+
+    revokeRefreshToken: async (
+        token: string,
+        refreshToken: string,
+    ): Promise<void> => {
+        await authClient.put("/auth/revoke-refresh-token", {
+            token,
+            refreshToken,
+        });
+    },
 };
