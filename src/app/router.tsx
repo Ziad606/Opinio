@@ -3,13 +3,14 @@ import App from "./App";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute";
 
 export const router = createBrowserRouter([
-    {
-        element: <ProtectedRoute />,
-        children: [
-            {
-                path: "/",
-                element: <App />,
-            },
-        ],
-    },
+    // {
+    //     element: <ProtectedRoute />,
+    //     children: [
+    //         {
+    //             path: "/",
+    //             element: <App />,
+    //         },
+    //     ],
+    // },
+    { path: "/", element: <App /> },
 ]);

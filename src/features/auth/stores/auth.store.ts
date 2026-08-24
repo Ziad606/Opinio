@@ -12,7 +12,7 @@ interface AuthState {
     accessTokenExpiresIn: number | null;
     refreshTokenExpiration: string | null;
 
-    isAuthenticated: boolean;
+    isHydrated: boolean;
 
     setAuth: (auth: AuthResponse) => void;
     clearAuth: () => void;
@@ -29,7 +29,7 @@ export const useAuthStore = create<AuthState>()(
             accessTokenExpiresIn: null,
             refreshTokenExpiration: null,
             isAuthenticated: false,
-
+            isHydrated: false,
             setAuth: (auth) =>
                 set({
                     user: {
@@ -44,7 +44,6 @@ export const useAuthStore = create<AuthState>()(
 
                     accessTokenExpiresIn: auth.expiresIn,
                     refreshTokenExpiration: auth.refreshTokenExpiration,
-                    isAuthenticated: true,
                 }),
 
             clearAuth: () =>
@@ -56,11 +55,25 @@ export const useAuthStore = create<AuthState>()(
 
                     accessTokenExpiresIn: null,
                     refreshTokenExpiration: null,
-                    isAuthenticated: true,
                 }),
         }),
         {
             name: "opinio-auth",
+            partialize: (state) => ({
+                user: state.user,
+                accessToken: state.accessToken,
+                refreshToken: state.refreshToken,
+                accessTokenExpiresIn: state.accessTokenExpiresIn,
+                refreshTokenExpiration: state.refreshTokenExpiration,
+            }),
+
+            onRehydrateStorage: () => {
+                return () => {
+                    useAuthStore.setState({
+                        isHydrated: true,
+                    });
+                };
+            },
         },
     ),
 );
