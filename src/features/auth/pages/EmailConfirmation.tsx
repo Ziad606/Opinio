@@ -11,7 +11,9 @@ import { Button, Card, Input, Label } from "../../../components/ui";
 const isDuplicatedConfirmError = (error: unknown): boolean => {
     if (error instanceof ApiError) {
         return error.errors.some(
-            (e) => e.code === "User.DuplicatedConfirm" || e.code?.includes("DuplicatedConfirm"),
+            (e) =>
+                e.code === "User.DuplicatedConfirm" ||
+                e.code?.includes("DuplicatedConfirm"),
         );
     }
     if (axios.isAxiosError(error) && error.response?.data?.errors) {
@@ -19,7 +21,8 @@ const isDuplicatedConfirmError = (error: unknown): boolean => {
         if (Array.isArray(errors)) {
             return errors.some(
                 (e: { code?: string }) =>
-                    e.code === "User.DuplicatedConfirm" || e.code?.includes("DuplicatedConfirm"),
+                    e.code === "User.DuplicatedConfirm" ||
+                    e.code?.includes("DuplicatedConfirm"),
             );
         }
     }
