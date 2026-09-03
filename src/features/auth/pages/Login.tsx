@@ -74,7 +74,7 @@ export default function Login() {
                     </div>
 
                     {unconfirmedEmail && (
-                        <div className="flex flex-col items-center gap-2 rounded-lg bg-error-container/20 p-4 text-center">
+                        <div className="flex flex-col items-center gap-2 rounded-lg bg-error-container p-4 text-center">
                             <p className="text-sm text-error">
                                 Your email address is not confirmed yet.
                             </p>

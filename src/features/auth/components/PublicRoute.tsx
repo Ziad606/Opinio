@@ -12,7 +12,11 @@ export function PublicRoute() {
     const isAuthenticated = useAuthStore((state) => !!state.accessToken);
 
     if (!isHydrated) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <p className="font-sans text-sm text-on-surface-variant">Loading...</p>
+            </div>
+        );
     }
 
     if (isAuthenticated) {

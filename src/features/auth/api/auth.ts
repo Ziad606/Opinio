@@ -11,13 +11,8 @@ export const authService = {
         return response.data;
     },
 
-    register: async (request: RegisterRequest): Promise<AuthResponse> => {
-        const response = await authClient.post<AuthResponse>(
-            "/Auth/register",
-            request,
-        );
-
-        return response.data;
+    register: async (request: RegisterRequest): Promise<void> => {
+        await authClient.post("/Auth/register", request);
     },
 
     confirmEmail: async (userId: string, code: string): Promise<void> => {

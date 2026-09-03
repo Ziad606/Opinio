@@ -16,30 +16,6 @@ interface AuthState {
     clearAuth: () => void;
 }
 
-function extractRolesFromToken(token: string): string[] {
-    try {
-        const base64Url = token.split(".")[1];
-        if (!base64Url) return [];
-        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        const jsonPayload = decodeURIComponent(
-            atob(base64)
-                .split("")
-                .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-                .join(""),
-        );
-        const payload = JSON.parse(jsonPayload);
-        const roleClaim =
-            payload.role ||
-            payload.roles ||
-            payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-
-        if (!roleClaim) return [];
-        return Array.isArray(roleClaim) ? roleClaim : [roleClaim];
-    } catch {
-        return [];
-    }
-}
-
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
@@ -51,15 +27,14 @@ export const useAuthStore = create<AuthState>()(
             accessTokenExpiresIn: null,
             refreshTokenExpiration: null,
 
-            setAuth: (auth) => {
-                const roles = extractRolesFromToken(auth.token);
+            setAuth: (auth) =>
                 set({
                     user: {
                         id: auth.id,
                         firstName: auth.firstName,
                         lastName: auth.lastName,
                         email: auth.email,
-                        roles: roles.length > 0 ? roles : ["Admin"],
+                        roles: auth.roles,
                     },
 
                     accessToken: auth.token,
@@ -67,8 +42,7 @@ export const useAuthStore = create<AuthState>()(
 
                     accessTokenExpiresIn: auth.expiresIn,
                     refreshTokenExpiration: auth.refreshTokenExpiration,
-                });
-            },
+                }),
 
             clearAuth: () =>
                 set({

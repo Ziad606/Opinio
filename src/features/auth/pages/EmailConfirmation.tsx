@@ -1,33 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
-import axios from "axios";
-import { authService } from "../api/auth";
+import { useConfirmEmail } from "../hooks/useConfirmEmail";
 import { useResendConfirmEmail } from "../hooks/useResendConfirmEmail";
-import { ApiError } from "../../../types/api-error";
 import { Button, Card, Input, Label } from "../../../components/ui";
-
-const isDuplicatedConfirmError = (error: unknown): boolean => {
-    if (error instanceof ApiError) {
-        return error.errors.some(
-            (e) =>
-                e.code === "User.DuplicatedConfirm" ||
-                e.code?.includes("DuplicatedConfirm"),
-        );
-    }
-    if (axios.isAxiosError(error) && error.response?.data?.errors) {
-        const errors = error.response.data.errors;
-        if (Array.isArray(errors)) {
-            return errors.some(
-                (e: { code?: string }) =>
-                    e.code === "User.DuplicatedConfirm" ||
-                    e.code?.includes("DuplicatedConfirm"),
-            );
-        }
-    }
-    return false;
-};
 
 export default function EmailConfirmation() {
     const [searchParams] = useSearchParams();
@@ -39,21 +14,7 @@ export default function EmailConfirmation() {
     const userId = searchParams.get("userId") ?? "";
     const code = searchParams.get("code") ?? "";
 
-    const { mutate, status } = useMutation({
-        mutationFn: () => authService.confirmEmail(userId, code),
-        onError: (error) => {
-            if (isDuplicatedConfirmError(error)) {
-                toast.info("Email is already confirmed. Please log in.");
-                navigate("/auth/login", { replace: true });
-            }
-        },
-    });
-
-    useEffect(() => {
-        if (userId && code) {
-            mutate();
-        }
-    }, []);
+    const { status } = useConfirmEmail(userId, code);
 
     const isLoading = status === "idle" || status === "pending";
     const isSuccess = status === "success";

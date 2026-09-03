@@ -21,12 +21,44 @@ export default function Register() {
     });
 
     const onSubmit = (data: RegisterFormValues) => {
-        register_.mutate(data, {
-            onSuccess: () => {
-                navigate("/home", { replace: true });
-            },
-        });
+        register_.mutate(data);
     };
+
+    if (register_.isSuccess) {
+        return (
+            <main className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
+                <div className="w-full max-w-md">
+                    <Card className="flex flex-col items-center gap-6 p-8 text-center">
+                        <h1 className="font-display text-4xl font-bold text-primary md:text-5xl">
+                            Opinio
+                        </h1>
+
+                        <div className="flex flex-col items-center gap-3">
+                            <p className="font-sans text-base font-semibold text-on-surface">
+                                Check your email
+                            </p>
+                            <p className="font-sans text-sm text-on-surface-variant">
+                                We sent a confirmation link to your email address. Please check your inbox and click the link to activate your account.
+                            </p>
+                        </div>
+
+                        <div className="w-full border-t border-outline-variant pt-4">
+                            <p className="text-sm text-on-surface-variant">
+                                Already confirmed?{" "}
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/auth/login")}
+                                    className="font-semibold text-primary transition-colors hover:text-primary-container"
+                                >
+                                    Sign in here
+                                </button>
+                            </p>
+                        </div>
+                    </Card>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
