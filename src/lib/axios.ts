@@ -74,25 +74,23 @@ apiClient.interceptors.response.use(
     },
 );
 
-apiClient.interceptors.response.use(
-    (response) => response,
+const handleApiError = (error: unknown) => {
+    if (axios.isAxiosError(error) && error.response) {
+        const data = error.response.data;
 
-    (error) => {
-        if (axios.isAxiosError(error) && error.response) {
-            const data = error.response.data;
-
-            if (data?.errors && Array.isArray(data.errors)) {
-                // هنا بنحوّله إلى ApiError
-                throw new ApiError(
-                    data.status ?? error.response.status,
-                    data.errors,
-                    data.title ?? "Request failed",
-                );
-            }
+        if (data?.errors && Array.isArray(data.errors)) {
+            throw new ApiError(
+                data.status ?? error.response.status,
+                data.errors,
+                data.title ?? "Request failed",
+            );
         }
-        throw error;
-    },
-);
+    }
+    throw error;
+};
+
+apiClient.interceptors.response.use((response) => response, handleApiError);
+authClient.interceptors.response.use((response) => response, handleApiError);
 
 async function refreshAccessToken(): Promise<string> {
     try {

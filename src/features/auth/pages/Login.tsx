@@ -1,18 +1,26 @@
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useLogin } from "../hooks/useLogin";
+import { useResendConfirmEmail } from "../hooks/useResendConfirmEmail";
 import type { LoginFormValues } from "../types/LoginFormValues";
 import type { LoginLocationState } from "../types/LoginLocationState";
+import { ApiError } from "../../../types/api-error";
 
 import { Button, Card, Input, Label } from "../../../components/ui";
 import { loginSchema } from "../types/loginSchema";
 
 export default function Login() {
     const login = useLogin();
+    const resend = useResendConfirmEmail();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(
+        null,
+    );
 
     const {
         register,
@@ -23,6 +31,8 @@ export default function Login() {
     });
 
     const onSubmit = (data: LoginFormValues) => {
+        setUnconfirmedEmail(null);
+
         login.mutate(data, {
             onSuccess: () => {
                 const state = location.state as LoginLocationState | null;
@@ -34,6 +44,16 @@ export default function Login() {
                 navigate(from, {
                     replace: true,
                 });
+            },
+            onError: (error) => {
+                if (
+                    error instanceof ApiError &&
+                    error.errors.some(
+                        (e) => e.code === "User.EmailNotConfirmed",
+                    )
+                ) {
+                    setUnconfirmedEmail(data.email);
+                }
             },
         });
     };
@@ -52,6 +72,24 @@ export default function Login() {
                             Sign in to manage your polls and analytics.
                         </p>
                     </div>
+
+                    {unconfirmedEmail && (
+                        <div className="flex flex-col items-center gap-2 rounded-lg bg-error-container/20 p-4 text-center">
+                            <p className="text-sm text-error">
+                                Your email address is not confirmed yet.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={() => resend.mutate(unconfirmedEmail)}
+                                disabled={resend.isPending}
+                                className="text-sm font-semibold text-primary transition-colors hover:text-primary-container disabled:opacity-50"
+                            >
+                                {resend.isPending
+                                    ? "Sending..."
+                                    : "Resend confirmation email"}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Form */}
                     <form
@@ -137,6 +175,7 @@ export default function Login() {
                             Don't have an account?
                             <button
                                 type="button"
+                                onClick={() => navigate("/auth/register")}
                                 className="ml-1 font-semibold text-primary transition-colors hover:text-primary-container"
                             >
                                 Register here
