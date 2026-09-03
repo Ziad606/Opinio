@@ -12,8 +12,6 @@ interface AuthState {
     accessTokenExpiresIn: number | null;
     refreshTokenExpiration: string | null;
 
-    isHydrated: boolean;
-
     setAuth: (auth: AuthResponse) => void;
     clearAuth: () => void;
 }
@@ -28,8 +26,7 @@ export const useAuthStore = create<AuthState>()(
 
             accessTokenExpiresIn: null,
             refreshTokenExpiration: null,
-            isAuthenticated: false,
-            isHydrated: false,
+
             setAuth: (auth) =>
                 set({
                     user: {
@@ -66,14 +63,6 @@ export const useAuthStore = create<AuthState>()(
                 accessTokenExpiresIn: state.accessTokenExpiresIn,
                 refreshTokenExpiration: state.refreshTokenExpiration,
             }),
-
-            onRehydrateStorage: () => {
-                return () => {
-                    useAuthStore.setState({
-                        isHydrated: true,
-                    });
-                };
-            },
         },
     ),
 );

@@ -1,8 +1,8 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useSyncExternalStore } from "react";
 
-export function ProtectedRoute() {
+export function PublicRoute() {
     const isHydrated = useSyncExternalStore(
         useAuthStore.persist.onFinishHydration,
         useAuthStore.persist.hasHydrated,
@@ -11,14 +11,12 @@ export function ProtectedRoute() {
 
     const isAuthenticated = useAuthStore((state) => !!state.accessToken);
 
-    const location = useLocation();
-
     if (!isHydrated) {
         return <div>Loading...</div>;
     }
 
-    if (!isAuthenticated) {
-        return <Navigate to="/auth/login" replace state={{ from: location }} />;
+    if (isAuthenticated) {
+        return <Navigate to="/home" replace />;
     }
 
     return <Outlet />;
