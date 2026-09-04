@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     Plus,
     LayoutDashboard,
@@ -9,20 +8,17 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "../../features/auth/stores/auth.store";
 import { Button } from "../ui/Button";
+import { useNavigate, useLocation } from "react-router-dom";
+import { routes } from "../../config/constants";
 
 interface SidebarProps {
-    activeNav?: string;
-    onNavSelect?: (item: string) => void;
     onCreatePoll?: () => void;
 }
 
-export function Sidebar({
-    activeNav = "Poll Management",
-    onNavSelect,
-    onCreatePoll,
-}: SidebarProps) {
+export function Sidebar({ onCreatePoll }: SidebarProps) {
     const user = useAuthStore((state) => state.user);
-    const [currentNav, setCurrentNav] = useState(activeNav);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const isAdmin = user?.role?.toLowerCase() === "admin";
 
@@ -31,16 +27,17 @@ export function Sidebar({
     }
 
     const navItems = [
-        { label: "Dashboard", icon: LayoutDashboard },
-        { label: "Poll Management", icon: Vote },
-        { label: "Data Analytics", icon: BarChart3 },
-        { label: "User Roles", icon: ShieldCheck },
-        { label: "Settings", icon: Settings },
+        { label: "Dashboard", icon: LayoutDashboard, path: routes.admin.dashboard },
+        { label: "Poll Management", icon: Vote, path: routes.admin.pollManagement },
+        { label: "Data Analytics", icon: BarChart3, path: "#" },
+        { label: "User Roles", icon: ShieldCheck, path: "#" },
+        { label: "Settings", icon: Settings, path: "#" },
     ];
 
-    const handleSelect = (label: string) => {
-        setCurrentNav(label);
-        onNavSelect?.(label);
+    const handleSelect = (path: string) => {
+        if (path !== "#") {
+            navigate(path);
+        }
     };
 
     return (
@@ -68,18 +65,19 @@ export function Sidebar({
             <nav className="flex flex-1 flex-col gap-1">
                 {navItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = currentNav === item.label;
+                    const isActive = location.pathname === item.path;
 
                     return (
                         <button
                             key={item.label}
                             type="button"
-                            onClick={() => handleSelect(item.label)}
+                            onClick={() => handleSelect(item.path)}
+                            disabled={item.path === "#"}
                             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 font-sans text-sm font-medium transition-colors ${
                                 isActive
                                     ? "bg-primary-fixed text-primary font-bold"
                                     : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-                            }`}
+                            } ${item.path === "#" ? "cursor-not-allowed opacity-50" : ""}`}
                         >
                             <Icon className={`h-5 w-5 ${isActive ? "text-primary" : "text-on-surface-variant"}`} />
                             {item.label}

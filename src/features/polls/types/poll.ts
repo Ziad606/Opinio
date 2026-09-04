@@ -6,3 +6,10 @@ export interface Poll {
     startsAt: string;
     endsAt: string;
 }
+
+export type PollStatus = "Published" | "Active" | "Disabled";
+
+export interface PollWithTarget extends Poll {
+    target: string;
+    status: PollStatus;
+}

@@ -246,6 +246,55 @@ Avoid magic strings, magic numbers, hardcoded regular expressions (Regex), or in
 
 Feature-specific logic lives inside `src/features/<feature_name>/`.
 
+### Directory Structure Rule
+
+**STRICT:** All feature code MUST follow this exact structure:
+
+```text
+src/features/<feature_name>/
+├── api/           (API service functions only)
+├── components/    (Feature-specific reusable components)
+├── hooks/         (Feature hooks: useQuery, useMutation, orchestration)
+├── pages/         (Full-page components for routing)
+├── stores/        (Zustand stores if needed)
+└── types/         (TypeScript types and Zod schemas)
+```
+
+**Rules:**
+
+1. **Pages vs Components:**
+   - `pages/` contains ONLY full-page route components (e.g., `PollManagement.tsx`, `PollsDashboard.tsx`)
+   - `components/` contains ONLY reusable feature-specific components used BY pages (e.g., `PollsTable.tsx`, `StatusBadge.tsx`)
+   - A component that is directly mounted as a route destination MUST live in `pages/`
+   - A component that is imported and used by other components MUST live in `components/`
+
+2. **Never mix pages and components in the same directory**
+
+3. **Page components:**
+   - Should compose smaller components from `components/` or `src/components/ui/`
+   - Should NOT contain complex UI logic — extract it into feature components
+   - Should use feature hooks from `hooks/`
+
+4. **Feature components:**
+   - Can be imported by pages OR other feature components
+   - Should handle a single UI concern (table, card, badge, form section)
+   - Should accept data via props, not fetch directly
+
+**Example violation:**
+
+```text
+❌ src/features/polls/PollsTable.tsx (not in pages/ or components/)
+❌ src/features/polls/pages/StatusBadge.tsx (component wrongly placed in pages/)
+```
+
+**Correct:**
+
+```text
+✅ src/features/polls/pages/PollManagement.tsx
+✅ src/features/polls/components/PollsTable.tsx
+✅ src/features/polls/components/StatusBadge.tsx
+```
+
 ---
 
 ## 13. Design System Rules

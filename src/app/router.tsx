@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute";
 import { PublicRoute } from "../features/auth/components/PublicRoute";
 import { AdminRoute } from "../features/auth/components/AdminRoute";
@@ -8,6 +7,8 @@ import Register from "../features/auth/pages/Register";
 import EmailConfirmation from "../features/auth/pages/EmailConfirmation";
 import { routes } from "../config/constants";
 import PollsDashboard from "../features/polls/pages/PollsDashboard";
+import PollManagement from "../features/polls/pages/PollManagement";
+import { AppLayout } from "../components/layout";
 
 export const router = createBrowserRouter([
     {
@@ -15,7 +16,11 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: routes.home,
-                element: <App />,
+                element: (
+                    <AppLayout>
+                        <PollsDashboard />
+                    </AppLayout>
+                ),
             },
         ],
     },
@@ -23,8 +28,17 @@ export const router = createBrowserRouter([
         element: <AdminRoute />,
         children: [
             {
-                path: routes.admin.dashboard,
-                element: <PollsDashboard />,
+                element: <AppLayout />,
+                children: [
+                    {
+                        path: routes.admin.dashboard,
+                        element: <PollsDashboard />,
+                    },
+                    {
+                        path: routes.admin.pollManagement,
+                        element: <PollManagement />,
+                    },
+                ],
             },
         ],
     },
@@ -39,5 +53,4 @@ export const router = createBrowserRouter([
             },
         ],
     },
-    { path: "*", element: <App /> },
 ]);

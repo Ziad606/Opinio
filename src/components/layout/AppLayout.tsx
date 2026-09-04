@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 
@@ -12,7 +13,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <Header />
             <div className="flex">
                 <Sidebar />
-                <main className="flex-1 p-6">{children}</main>
+                <main className="flex-1 p-6">{children || <Outlet />}</main>
             </div>
         </div>
     );
