@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute";
 import { PublicRoute } from "../features/auth/components/PublicRoute";
 import { AdminRoute } from "../features/auth/components/AdminRoute";
@@ -11,6 +11,10 @@ import PollManagement from "../features/polls/pages/PollManagement";
 import { AppLayout } from "../components/layout";
 
 export const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Navigate to={routes.home} replace />,
+    },
     {
         element: <ProtectedRoute />,
         children: [
@@ -52,5 +56,9 @@ export const router = createBrowserRouter([
                 element: <EmailConfirmation />,
             },
         ],
+    },
+    {
+        path: "*",
+        element: <Navigate to={routes.home} replace />,
     },
 ]);
