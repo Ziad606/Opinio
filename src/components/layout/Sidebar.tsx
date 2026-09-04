@@ -24,8 +24,7 @@ export function Sidebar({
     const user = useAuthStore((state) => state.user);
     const [currentNav, setCurrentNav] = useState(activeNav);
 
-    const isAdmin =
-        user?.roles?.some((r) => r.toLowerCase() === "admin") ?? true;
+    const isAdmin = user?.role?.toLowerCase() === "admin";
 
     if (!isAdmin) {
         return null;

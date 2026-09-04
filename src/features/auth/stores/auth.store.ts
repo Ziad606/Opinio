@@ -34,7 +34,7 @@ export const useAuthStore = create<AuthState>()(
                         firstName: auth.firstName,
                         lastName: auth.lastName,
                         email: auth.email,
-                        roles: auth.roles,
+                        role: auth.role,
                     },
 
                     accessToken: auth.token,
