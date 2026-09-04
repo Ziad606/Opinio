@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useSyncExternalStore } from "react";
+import { routes } from "../../../config/constants";
 
 export function PublicRoute() {
     const isHydrated = useSyncExternalStore(
@@ -20,7 +21,7 @@ export function PublicRoute() {
     }
 
     if (isAuthenticated) {
-        return <Navigate to="/home" replace />;
+        return <Navigate to={routes.home} replace />;
     }
 
     return <Outlet />;

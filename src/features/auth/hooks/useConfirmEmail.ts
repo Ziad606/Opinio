@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ApiError } from "../../../types/api-error";
 import { authService } from "../api/auth";
+import { routes } from "../../../config/constants";
 
 export function useConfirmEmail(userId: string, code: string) {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ export function useConfirmEmail(userId: string, code: string) {
                 )
             ) {
                 toast.info("Email is already confirmed. Please log in.");
-                navigate("/auth/login", { replace: true });
+                navigate(routes.auth.login, { replace: true });
             }
         },
     });

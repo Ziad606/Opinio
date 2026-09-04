@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useConfirmEmail } from "../hooks/useConfirmEmail";
 import { useResendConfirmEmail } from "../hooks/useResendConfirmEmail";
 import { Button, Card, Input, Label } from "../../../components/ui";
+import { routes } from "../../../config/constants";
 
 export default function EmailConfirmation() {
     const [searchParams] = useSearchParams();
@@ -50,7 +51,7 @@ export default function EmailConfirmation() {
 
                             <button
                                 type="button"
-                                onClick={() => navigate("/auth/login")}
+                                onClick={() => navigate(routes.auth.login)}
                                 className="font-semibold text-primary transition-colors hover:text-primary-container"
                             >
                                 Go to Login
@@ -98,7 +99,7 @@ export default function EmailConfirmation() {
 
                             <button
                                 type="button"
-                                onClick={() => navigate("/auth/login")}
+                                onClick={() => navigate(routes.auth.login)}
                                 className="text-sm font-semibold text-primary transition-colors hover:text-primary-container"
                             >
                                 Back to Login

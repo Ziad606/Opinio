@@ -7,6 +7,7 @@ import { registerSchema } from "../types/registerSchema";
 import type { RegisterFormValues } from "../types/registerSchema";
 
 import { Button, Card, Input, Label } from "../../../components/ui";
+import { routes } from "../../../config/constants";
 
 export default function Register() {
     const register_ = useRegister();
@@ -47,7 +48,7 @@ export default function Register() {
                                 Already confirmed?{" "}
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/auth/login")}
+                                    onClick={() => navigate(routes.auth.login)}
                                     className="font-semibold text-primary transition-colors hover:text-primary-container"
                                 >
                                     Sign in here

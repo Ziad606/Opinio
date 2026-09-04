@@ -223,19 +223,32 @@ Use React Hook Form for form state and Zod for validation schemas.
 
 ---
 
-## 10. Routing
+## 10. Routing & Constants
 
 React Router owns routing and navigation.
 
+- Centralize all route paths in `src/config/constants.ts` (e.g., `routes.home`, `routes.auth.login`).
+- Do NOT use magic strings for route paths anywhere in components, hooks, router configurations, or navigation actions. Use the `routes` constant instead.
+
 ---
 
-## 11. Feature-Based Organization
+## 11. Constants & Magic Values Policy
+
+Avoid magic strings, magic numbers, hardcoded regular expressions (Regex), or inline values that can change and break functionality.
+
+- Centralize all application constants (route paths, regex patterns, validation limits, API error codes, configuration strings) in `src/config/constants.ts`.
+- Never define inline regex literals (e.g. `/\d/`, `/[A-Za-z]/`) inside components, hooks, or schemas. Import them from `patterns` or the constants file instead.
+- If a value is subject to change or reuse across components/schemas/services, it MUST be exported as a constant.
+
+---
+
+## 12. Feature-Based Organization
 
 Feature-specific logic lives inside `src/features/<feature_name>/`.
 
 ---
 
-## 12. Design System Rules
+## 13. Design System Rules
 
 - Colors: `bg-primary`, `bg-surface`, `bg-background`, `text-on-surface`, `text-on-surface-variant`, `border-border`, `bg-error`, `text-error`, etc.
 - Typography: `font-display`, `font-sans`.

@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/auth.store";
 import { useSyncExternalStore } from "react";
+import { routes } from "../../../config/constants";
 
 export function ProtectedRoute() {
     const isHydrated = useSyncExternalStore(
@@ -22,7 +23,7 @@ export function ProtectedRoute() {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/auth/login" replace state={{ from: location }} />;
+        return <Navigate to={routes.auth.login} replace state={{ from: location }} />;
     }
 
     return <Outlet />;

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { patterns } from "../../../config/constants";
 
 export const registerSchema = z.object({
     firstName: z.string().trim().min(1, "First name is required"),
@@ -15,10 +16,10 @@ export const registerSchema = z.object({
         .string()
         .min(1, "Password is required")
         .min(8, "Password must be at least 8 characters")
-        .regex(/[A-Za-z]/, "Password must contain at least one letter")
-        .regex(/\d/, "Password must contain at least one number")
+        .regex(patterns.atLeastOneLetter, "Password must contain at least one letter")
+        .regex(patterns.atLeastOneNumber, "Password must contain at least one number")
         .regex(
-            /[^A-Za-z0-9]/,
+            patterns.atLeastOneSpecialChar,
             "Password must contain at least one special character",
         ),
 });

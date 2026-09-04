@@ -4,6 +4,7 @@ import { Bell, Settings, LogOut, LogIn } from "lucide-react";
 import { useAuthStore } from "../../features/auth/stores/auth.store";
 import { useLogout } from "../../features/auth/hooks/useLogout";
 import { Button } from "../ui/Button";
+import { routes } from "../../config/constants";
 
 interface HeaderProps {
     activeTab?: string;
@@ -28,7 +29,7 @@ export function Header({ activeTab = "Polls", onTabChange }: HeaderProps) {
     };
 
     const handleLogin = () => {
-        navigate("/auth/login");
+        navigate(routes.auth.login);
     };
 
     const userFullName = user ? `${user.firstName} ${user.lastName}`.trim() : "";
@@ -39,7 +40,7 @@ export function Header({ activeTab = "Polls", onTabChange }: HeaderProps) {
     return (
         <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-border bg-surface px-6">
             <div className="flex items-center gap-8">
-                <Link to="/home" className="font-display text-2xl font-bold tracking-tight text-primary">
+                <Link to={routes.home} className="font-display text-2xl font-bold tracking-tight text-primary">
                     Opinio
                 </Link>
 

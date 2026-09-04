@@ -11,6 +11,7 @@ import { ApiError } from "../../../types/api-error";
 
 import { Button, Card, Input, Label } from "../../../components/ui";
 import { loginSchema } from "../types/loginSchema";
+import { routes } from "../../../config/constants";
 
 export default function Login() {
     const login = useLogin();
@@ -38,7 +39,7 @@ export default function Login() {
                 const state = location.state as LoginLocationState | null;
 
                 const from = state?.from ?? {
-                    pathname: "/home",
+                    pathname: routes.home,
                 };
 
                 navigate(from, {
@@ -175,7 +176,7 @@ export default function Login() {
                             Don't have an account?
                             <button
                                 type="button"
-                                onClick={() => navigate("/auth/register")}
+                                onClick={() => navigate(routes.auth.register)}
                                 className="ml-1 font-semibold text-primary transition-colors hover:text-primary-container"
                             >
                                 Register here
